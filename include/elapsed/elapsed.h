@@ -6,6 +6,8 @@
 #include <stdlib.h>
 #include <time.h>
 
+#define ELAPSED_VERSION "1.0.0"
+
 #define INPLACE static inline
 
 struct elapsed;
