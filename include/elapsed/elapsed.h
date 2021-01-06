@@ -12,11 +12,10 @@
 
 struct elapsed;
 
-INPLACE struct elapsed* elapsed_create(void);
-INPLACE void            elapsed_start(struct elapsed* elapsed);
-INPLACE double          elapsed_end(struct elapsed* elapsed);
-INPLACE double          elapsed_seconds(struct elapsed const* elapsed);
-INPLACE void            elapsed_destroy(struct elapsed const* elapsed);
+INPLACE struct elapsed elapsed_init(void);
+INPLACE void           elapsed_start(struct elapsed* elapsed);
+INPLACE double         elapsed_end(struct elapsed* elapsed);
+INPLACE double         elapsed_seconds(struct elapsed const* elapsed);
 
 struct elapsed_perf;
 
@@ -37,16 +36,11 @@ INPLACE struct elapsed_stats elapsed_stats(struct elapsed_perf const* perf);
 
 struct elapsed
 {
-    clock_t  start;
-    clock_t  end;
-    double*  seconds;
-    unsigned ntrials;
+    clock_t start;
+    clock_t end;
 };
 
-INPLACE struct elapsed* elapsed_create(void)
-{
-    return (struct elapsed*)malloc(sizeof(struct elapsed));
-}
+INPLACE struct elapsed elapsed_init(void) { return (struct elapsed){0, 0}; }
 
 INPLACE void elapsed_start(struct elapsed* elapsed) { elapsed->start = clock(); }
 
@@ -60,8 +54,6 @@ INPLACE double elapsed_seconds(struct elapsed const* elapsed)
 {
     return ((double)(elapsed->end - elapsed->start)) / CLOCKS_PER_SEC;
 }
-
-INPLACE void elapsed_destroy(struct elapsed const* elapsed) { free((void*)elapsed); }
 
 /* -------------------- Elapsed perf implementation -------------------- */
 

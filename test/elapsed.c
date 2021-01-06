@@ -3,13 +3,11 @@
 
 int main(void)
 {
-    struct elapsed* elapsed = elapsed_create();
+    struct elapsed elapsed = elapsed_init();
 
-    elapsed_start(elapsed);
-    elapsed_end(elapsed);
-    cass_cond(elapsed_seconds(elapsed) < 1.0);
-
-    elapsed_destroy(elapsed);
+    elapsed_start(&elapsed);
+    elapsed_end(&elapsed);
+    cass_cond(elapsed_seconds(&elapsed) < 1.0);
 
     return cass_status();
 }
