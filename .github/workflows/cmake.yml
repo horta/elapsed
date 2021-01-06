@@ -46,6 +46,6 @@ jobs:
       run: ctest -C $BUILD_TYPE
 
     - name: Install
-      working-directory: ${{runner.workspace}}/build
+      working-directory: ${{github.workspace}}/build
       shell: bash
       run: sudo cmake --build . --target install --config $BUILD_TYPE
