@@ -6,7 +6,13 @@
 #include <stdlib.h>
 #include <time.h>
 
-#define ELAPSED_VERSION "1.0.0"
+#ifdef _WIN32
+#include <windows.h>
+#else
+#include <unistd.h>
+#endif
+
+#define ELAPSED_VERSION "1.1.0"
 
 #define INPLACE static inline
 
@@ -16,6 +22,7 @@ INPLACE struct elapsed elapsed_init(void);
 INPLACE void           elapsed_start(struct elapsed* elapsed);
 INPLACE double         elapsed_end(struct elapsed* elapsed);
 INPLACE double         elapsed_seconds(struct elapsed const* elapsed);
+INPLACE void           elapsed_sleep(double seconds);
 
 struct elapsed_perf;
 
@@ -53,6 +60,15 @@ INPLACE double elapsed_end(struct elapsed* elapsed)
 INPLACE double elapsed_seconds(struct elapsed const* elapsed)
 {
     return ((double)(elapsed->end - elapsed->start)) / CLOCKS_PER_SEC;
+}
+
+INPLACE void elapsed_sleep(double seconds)
+{
+#ifdef _WIN32
+    Sleep((DWORD)(seconds * 1000));
+#else
+    usleep((useconds_t)(seconds * 1000 * 1000));
+#endif
 }
 
 /* -------------------- Elapsed perf implementation -------------------- */

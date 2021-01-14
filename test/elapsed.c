@@ -9,5 +9,7 @@ int main(void)
     elapsed_end(&elapsed);
     cass_cond(elapsed_seconds(&elapsed) < 1.0);
 
+    elapsed_sleep(0.5);
+
     return cass_status();
 }
