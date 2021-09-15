@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.5.1 FATAL_ERROR)
+cmake_minimum_required(VERSION 3.10 FATAL_ERROR)
 project(
   elapsed
   VERSION 1.2.0
@@ -19,9 +19,12 @@ endif()
 add_library(elapsed src/os.c src/elapsed.c)
 add_library(ELAPSED::elapsed ALIAS elapsed)
 
-# Hide functions by default.
-set_property(TARGET elapsed PROPERTY C_VISIBILITY_PRESET hidden)
-set_property(TARGET elapsed PROPERTY VISIBILITY_INLINES_HIDDEN ON)
+# merge request fix: https://gitlab.kitware.com/cmake/cmake/-/merge_requests/1799
+if(CMAKE_VERSION VERSION_GREATER 3.12.0)
+    # Hide functions by default.
+    set_property(TARGET elapsed PROPERTY C_VISIBILITY_PRESET hidden)
+    set_property(TARGET elapsed PROPERTY VISIBILITY_INLINES_HIDDEN ON)
+endif()
 
 # Write out elapsed/export.h to the current binary directory.
 include(GenerateExportHeader)
@@ -29,8 +32,6 @@ generate_export_header(
     elapsed
     BASE_NAME
     ELAPSED
-    INCLUDE_GUARD_NAME
-    ELAPSED_EXPORT_H
     EXPORT_MACRO_NAME
     ELAPSED_API
     EXPORT_FILE_NAME

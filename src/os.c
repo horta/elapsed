@@ -30,7 +30,7 @@ void __elapsed_timespec_set(struct timespec *ts, double seconds)
 int __elapsed_timespec_get(struct timespec *ts)
 {
 #if defined(HAVE_TIMESPEC_GET)
-    return timespec_get(ts, 1) != 1;
+    return timespec_get(ts, TIME_UTC) != TIME_UTC;
 #elif defined(HAVE_CLOCK_GETTIME)
     return clock_gettime(ELAPSED_CLOCK_TYPE, ts);
 #elif defined(HAVE_GETTIMEOFDAY)
