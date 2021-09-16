@@ -16,6 +16,28 @@ if("${isSystemDir}" STREQUAL "-1")
     set(CMAKE_INSTALL_RPATH "${CMAKE_INSTALL_PREFIX}/lib")
 endif()
 
+if(CMAKE_C_COMPILER_ID STREQUAL "MSVC")
+  # /wd5105:
+  # https://docs.microsoft.com/en-us/cpp/error-messages/compiler-warnings/c5105?view=msvc-160
+  set(WARNING_FLAGS /W3 /wd5105)
+else()
+  set(WARNING_FLAGS
+      -Wall
+      -Wextra
+      -Wstrict-prototypes
+      -Wshadow
+      -Wconversion
+      -Wmissing-prototypes
+      -Wno-unused-parameter
+      -Wsign-conversion
+      -Wno-unused-function)
+
+  if(NOT CMAKE_C_COMPILER_ID STREQUAL "GNU")
+    list(APPEND WARNING_FLAGS -Wno-gnu-designator -Wno-empty-translation-unit
+         -Wno-gnu-statement-expression -Wno-nullability-extension)
+  endif()
+endif()
+
 add_library(elapsed src/os.c src/elapsed.c)
 add_library(ELAPSED::elapsed ALIAS elapsed)
 
@@ -36,28 +58,6 @@ generate_export_header(
     ELAPSED_API
     EXPORT_FILE_NAME
     ${CMAKE_CURRENT_BINARY_DIR}/elapsed/export.h)
-
-if(CMAKE_C_COMPILER_ID STREQUAL "MSVC")
-  # /wd5105:
-  # https://docs.microsoft.com/en-us/cpp/error-messages/compiler-warnings/c5105?view=msvc-160
-  set(WARNING_FLAGS /W3 /wd5105)
-else()
-  set(WARNING_FLAGS
-      -Wall
-      -Wextra
-      -Wstrict-prototypes
-      -Wshadow
-      -Wconversion
-      -Wmissing-prototypes
-      -Wno-unused-parameter
-      -Wsign-conversion
-      -Wno-unused-function)
-endif()
-
-if(NOT CMAKE_C_COMPILER_ID STREQUAL "GNU")
-  list(APPEND WARNING_FLAGS -Wno-gnu-designator -Wno-empty-translation-unit
-       -Wno-gnu-statement-expression -Wno-nullability-extension)
-endif()
 
 option(CI_BUILD "CI, extra flags will be set" OFF)
 if(CI_BUILD)
