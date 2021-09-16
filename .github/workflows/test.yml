@@ -22,10 +22,12 @@ jobs:
 
     - name: Install dependencies
       if: runner.os == 'Windows'
+      shell: bash
       run: ./install-deps
 
     - name: Install dependencies
       if: runner.os != 'Windows'
+      shell: bash
       run: sudo ./install-deps
 
     - name: Create Build Environment
