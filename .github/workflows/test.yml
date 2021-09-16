@@ -16,16 +16,16 @@ jobs:
     steps:
     - uses: actions/checkout@v2
 
-    - name: Alias sudo
-      if: runner.os == 'Windows'
-      shell: bash
-      run: alias sudo=""
-
     - name: Install argp for MacOS
       if: runner.os == 'macOS'
       run: brew install argp-standalone
 
     - name: Install dependencies
+      if: runner.os == 'Windows'
+      run: ./install-deps
+
+    - name: Install dependencies
+      if: runner.os != 'Windows'
       run: sudo ./install-deps
 
     - name: Create Build Environment
