@@ -13,7 +13,7 @@ set(CMAKE_INSTALL_RPATH_USE_LINK_PATH TRUE)
 list(FIND CMAKE_PLATFORM_IMPLICIT_LINK_DIRECTORIES
      "${CMAKE_INSTALL_PREFIX}/lib" isSystemDir)
 if("${isSystemDir}" STREQUAL "-1")
-    set(CMAKE_INSTALL_RPATH "${CMAKE_INSTALL_PREFIX}/lib")
+  set(CMAKE_INSTALL_RPATH "${CMAKE_INSTALL_PREFIX}/lib")
 endif()
 
 if(CMAKE_C_COMPILER_ID STREQUAL "MSVC")
@@ -41,39 +41,44 @@ endif()
 add_library(elapsed src/os.c src/elapsed.c)
 add_library(ELAPSED::elapsed ALIAS elapsed)
 
-# merge request fix: https://gitlab.kitware.com/cmake/cmake/-/merge_requests/1799
+# merge request fix:
+# https://gitlab.kitware.com/cmake/cmake/-/merge_requests/1799
 if(CMAKE_VERSION VERSION_GREATER 3.12.0)
-    # Hide functions by default.
-    set_property(TARGET elapsed PROPERTY C_VISIBILITY_PRESET hidden)
-    set_property(TARGET elapsed PROPERTY VISIBILITY_INLINES_HIDDEN ON)
+  # Hide functions by default.
+  set_property(TARGET elapsed PROPERTY C_VISIBILITY_PRESET hidden)
+  set_property(TARGET elapsed PROPERTY VISIBILITY_INLINES_HIDDEN ON)
 endif()
 
 # Write out elapsed/export.h to the current binary directory.
 include(GenerateExportHeader)
 generate_export_header(
-    elapsed
-    BASE_NAME
-    ELAPSED
-    EXPORT_MACRO_NAME
-    ELAPSED_API
-    EXPORT_FILE_NAME
-    ${CMAKE_CURRENT_BINARY_DIR}/elapsed/export.h)
+  elapsed
+  BASE_NAME
+  ELAPSED
+  EXPORT_MACRO_NAME
+  ELAPSED_API
+  EXPORT_FILE_NAME
+  ${CMAKE_CURRENT_BINARY_DIR}/elapsed/export.h)
 
 option(CI_BUILD "CI, extra flags will be set" OFF)
 if(CI_BUILD)
-    message(STATUS "CI build enabled")
+  message(STATUS "CI build enabled")
+  if(CMAKE_C_COMPILER_ID STREQUAL "MSVC")
+    add_compile_options(/WX)
+  else()
     add_compile_options(-Werror)
+  endif()
 endif()
 
 target_include_directories(
   elapsed INTERFACE $<INSTALL_INTERFACE:include>
                     $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>)
 target_include_directories(
-    elapsed
-    PUBLIC $<INSTALL_INTERFACE:include>
-           $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/src>
-           $<BUILD_INTERFACE:${CMAKE_CURRENT_BINARY_DIR}>
-    PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/src)
+  elapsed
+  PUBLIC $<INSTALL_INTERFACE:include>
+         $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/src>
+         $<BUILD_INTERFACE:${CMAKE_CURRENT_BINARY_DIR}>
+  PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/src)
 set_target_properties(elapsed PROPERTIES VERSION ${PROJECT_VERSION})
 set_target_properties(elapsed PROPERTIES SOVERSION ${PROJECT_VERSION_MAJOR})
 target_compile_features(elapsed INTERFACE c_std_11)
@@ -82,10 +87,10 @@ target_link_libraries(elapsed PUBLIC $<$<BOOL:${LIBRT_FOUND}>:LIBRT::LIBRT>)
 
 # Include file check macros honor CMAKE_REQUIRED_LIBRARIES
 if(CMAKE_VERSION VERSION_GREATER 3.12.0)
-    cmake_policy(SET CMP0075 NEW)
+  cmake_policy(SET CMP0075 NEW)
 endif()
-if (LIBRT_FOUND)
-    set(CMAKE_REQUIRED_LIBRARIES ${LIBRT_LIBRARIES})
+if(LIBRT_FOUND)
+  set(CMAKE_REQUIRED_LIBRARIES ${LIBRT_LIBRARIES})
 endif()
 
 include(CheckFunctionExists)
@@ -94,25 +99,31 @@ include(CheckLibraryExists)
 include(CheckSymbolExists)
 
 check_symbol_exists(gettimeofday sys/time.h HAVE_GETTIMEOFDAY)
-target_compile_definitions(elapsed PRIVATE $<$<BOOL:${HAVE_GETTIMEOFDAY_H}>:HAVE_GETTIMEOFDAY>)
+target_compile_definitions(
+  elapsed PRIVATE $<$<BOOL:${HAVE_GETTIMEOFDAY_H}>:HAVE_GETTIMEOFDAY>)
 
 check_include_file(unistd.h HAVE_UNISTD_H)
-target_compile_definitions(elapsed PRIVATE $<$<BOOL:${HAVE_UNISTD_H}>:HAVE_UNISTD_H>)
+target_compile_definitions(elapsed
+                           PRIVATE $<$<BOOL:${HAVE_UNISTD_H}>:HAVE_UNISTD_H>)
 
 check_include_file(windows.h HAVE_WINDOWS_H)
-target_compile_definitions(elapsed PRIVATE $<$<BOOL:${HAVE_WINDOWS_H}>:HAVE_WINDOWS_H>)
+target_compile_definitions(elapsed
+                           PRIVATE $<$<BOOL:${HAVE_WINDOWS_H}>:HAVE_WINDOWS_H>)
 
 check_symbol_exists(timespec_get time.h HAVE_TIMESPEC_GET)
-target_compile_definitions(elapsed PRIVATE $<$<BOOL:${HAVE_TIMESPEC_GET}>:HAVE_TIMESPEC_GET>)
+target_compile_definitions(
+  elapsed PRIVATE $<$<BOOL:${HAVE_TIMESPEC_GET}>:HAVE_TIMESPEC_GET>)
 
 check_symbol_exists(clock_gettime time.h HAVE_CLOCK_GETTIME)
-target_compile_definitions(elapsed PRIVATE $<$<BOOL:${HAVE_CLOCK_GETTIME}>:HAVE_CLOCK_GETTIME>)
+target_compile_definitions(
+  elapsed PRIVATE $<$<BOOL:${HAVE_CLOCK_GETTIME}>:HAVE_CLOCK_GETTIME>)
 
 check_include_file(sys/time.h HAVE_SYS_TIME_H)
-target_compile_definitions(elapsed PRIVATE $<$<BOOL:${HAVE_SYS_TIME_H}>:HAVE_SYS_TIME_H>)
+target_compile_definitions(
+  elapsed PRIVATE $<$<BOOL:${HAVE_SYS_TIME_H}>:HAVE_SYS_TIME_H>)
 
-if (NOT(HAVE_CLOCK_GETTIME OR HAVE_TIMESPEC_GET))
-    message(WARNING "Neiher clock_gettime nor timespec_get could be found.")
+if(NOT (HAVE_CLOCK_GETTIME OR HAVE_TIMESPEC_GET))
+  message(WARNING "Neiher clock_gettime nor timespec_get could be found.")
 endif()
 
 install(
@@ -123,7 +134,8 @@ install(
   ARCHIVE DESTINATION lib
   PUBLIC_HEADER DESTINATION include)
 install(DIRECTORY src/elapsed/ DESTINATION include/elapsed)
-install(FILES ${CMAKE_CURRENT_BINARY_DIR}/elapsed/export.h DESTINATION include/elapsed)
+install(FILES ${CMAKE_CURRENT_BINARY_DIR}/elapsed/export.h
+        DESTINATION include/elapsed)
 install(
   EXPORT elapsed-targets
   FILE elapsed-targets.cmake
