@@ -38,6 +38,16 @@ else()
   endif()
 endif()
 
+option(CI_BUILD "CI, extra flags will be set" OFF)
+if(CI_BUILD)
+  message(STATUS "CI build enabled")
+  if(CMAKE_C_COMPILER_ID STREQUAL "MSVC")
+    add_compile_options(/WX)
+  else()
+    add_compile_options(-Werror)
+  endif()
+endif()
+
 add_library(elapsed src/os.c src/elapsed.c)
 add_library(ELAPSED::elapsed ALIAS elapsed)
 
@@ -47,6 +57,9 @@ if(CMAKE_VERSION VERSION_GREATER 3.12.0)
   # Hide functions by default.
   set_property(TARGET elapsed PROPERTY C_VISIBILITY_PRESET hidden)
   set_property(TARGET elapsed PROPERTY VISIBILITY_INLINES_HIDDEN ON)
+else()
+  # Fix for https://github.com/horta/almosthere/issues/3
+  set(GCC_TOO_OLD TRUE)
 endif()
 
 # Write out elapsed/export.h to the current binary directory.
@@ -60,16 +73,6 @@ generate_export_header(
   EXPORT_FILE_NAME
   ${CMAKE_CURRENT_BINARY_DIR}/elapsed/export.h)
 
-option(CI_BUILD "CI, extra flags will be set" OFF)
-if(CI_BUILD)
-  message(STATUS "CI build enabled")
-  if(CMAKE_C_COMPILER_ID STREQUAL "MSVC")
-    add_compile_options(/WX)
-  else()
-    add_compile_options(-Werror)
-  endif()
-endif()
-
 target_include_directories(
   elapsed INTERFACE $<INSTALL_INTERFACE:include>
                     $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>)
@@ -82,7 +85,6 @@ target_include_directories(
 set_target_properties(elapsed PROPERTIES VERSION ${PROJECT_VERSION})
 set_target_properties(elapsed PROPERTIES SOVERSION ${PROJECT_VERSION_MAJOR})
 target_compile_features(elapsed INTERFACE c_std_11)
-
 target_link_libraries(elapsed PUBLIC $<$<BOOL:${LIBRT_FOUND}>:LIBRT::LIBRT>)
 
 # Include file check macros honor CMAKE_REQUIRED_LIBRARIES
