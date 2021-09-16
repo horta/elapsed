@@ -2,7 +2,9 @@
 #include <assert.h>
 #include <stddef.h>
 #include <stdio.h>
+#if defined(HAVE_SYS_TIME_H)
 #include <sys/time.h>
+#endif
 #include <time.h>
 
 /* https://stackoverflow.com/a/50245503 */

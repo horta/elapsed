@@ -108,6 +108,9 @@ target_compile_definitions(elapsed PRIVATE $<$<BOOL:${HAVE_TIMESPEC_GET}>:HAVE_T
 check_symbol_exists(clock_gettime time.h HAVE_CLOCK_GETTIME)
 target_compile_definitions(elapsed PRIVATE $<$<BOOL:${HAVE_CLOCK_GETTIME}>:HAVE_CLOCK_GETTIME>)
 
+check_include_file(sys/time.h HAVE_SYS_TIME_H)
+target_compile_definitions(elapsed PRIVATE $<$<BOOL:${HAVE_SYS_TIME_H}>:HAVE_SYS_TIME_H>)
+
 if (NOT(HAVE_CLOCK_GETTIME OR HAVE_TIMESPEC_GET))
     message(WARNING "Neiher clock_gettime nor timespec_get could be found.")
 endif()
