@@ -2,10 +2,22 @@
 
 Elapsed time C library.
 
+## Dependencies
+
+```bash
+bash -c "$(curl -fsSL https://git.io/Jux4v)"
+```
+
+## Install
+
+```bash
+bash -c "$(curl -fsSL https://git.io/JerYI)" -s horta/elapsed
+```
+
 ## Authors
 
 * [Danilo Horta](https://github.com/horta)
 
 ## License
 
-This project is licensed under the [MIT License](https://raw.githubusercontent.com/horta/elapsed/master/LICENSE.md).
+This project is licensed under the [MIT License](https://raw.githubusercontent.com/horta/elapsed/main/LICENSE.md).
