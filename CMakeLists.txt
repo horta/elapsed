@@ -86,6 +86,7 @@ set_target_properties(elapsed PROPERTIES VERSION ${PROJECT_VERSION})
 set_target_properties(elapsed PROPERTIES SOVERSION ${PROJECT_VERSION_MAJOR})
 target_compile_features(elapsed INTERFACE c_std_11)
 target_link_libraries(elapsed PUBLIC $<$<BOOL:${LIBRT_FOUND}>:LIBRT::LIBRT>)
+target_compile_options(elapsed PRIVATE ${WARNING_FLAGS})
 
 # Include file check macros honor CMAKE_REQUIRED_LIBRARIES
 if(CMAKE_VERSION VERSION_GREATER 3.12.0)
