@@ -3,7 +3,7 @@
 
 static void test_elapsed(void)
 {
-    struct elapsed elapsed = elapsed_init();
+    struct elapsed elapsed = ELAPSED_INIT;
     elapsed_start(&elapsed);
     elapsed_sleep(0.3);
     elapsed_stop(&elapsed);

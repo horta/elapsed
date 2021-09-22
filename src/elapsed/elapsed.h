@@ -11,7 +11,10 @@ struct elapsed
     struct timespec stop;
 };
 
-static inline struct elapsed elapsed_init(void) { return (struct elapsed){0}; }
+#define ELAPSED_INIT                                                           \
+    {                                                                          \
+        0                                                                      \
+    }
 
 ELAPSED_API void elapsed_start(struct elapsed *elapsed);
 ELAPSED_API double elapsed_seconds(struct elapsed const *elapsed);
