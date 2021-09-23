@@ -20,15 +20,6 @@
 #define ELAPSED_CLOCK_TYPE 0
 #endif
 
-void __elapsed_timespec_set(struct timespec *ts, double seconds)
-{
-    int isec = (int)seconds;
-    double remainder;
-    ts->tv_sec = isec;
-    remainder = seconds - ((double)isec);
-    ts->tv_nsec = (long)(remainder * 1000 * 1000 * 1000);
-}
-
 int __elapsed_timespec_get(struct timespec *ts)
 {
 #if defined(HAVE_TIMESPEC_GET)
@@ -45,23 +36,4 @@ int __elapsed_timespec_get(struct timespec *ts)
 #else
     static_assert(0, "failed to define __elapsed_timespec_get");
 #endif
-}
-
-double __elapsed_timespec_diff(struct timespec const *start,
-                               struct timespec const *stop)
-{
-    struct timespec diff = {0};
-    if ((stop->tv_nsec - start->tv_nsec) < 0)
-    {
-        diff.tv_sec = stop->tv_sec - start->tv_sec - 1;
-        diff.tv_nsec = stop->tv_nsec - start->tv_nsec + 1000000000;
-    }
-    else
-    {
-        diff.tv_sec = stop->tv_sec - start->tv_sec;
-        diff.tv_nsec = stop->tv_nsec - start->tv_nsec;
-    }
-    double f = ((double)diff.tv_nsec) / 1000.0 / 1000.0 / 1000.0;
-    double seconds = ((double)diff.tv_sec) + f;
-    return seconds;
 }
