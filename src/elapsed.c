@@ -102,7 +102,7 @@ static int __elapsed_sleep(const struct timespec *duration,
 
 int elapsed_sleep(uint64_t ms)
 {
-    struct timespec t = {.tv_sec = ms / SEC_IN_MILLISEC,
-                         .tv_nsec = (ms % SEC_IN_MILLISEC) * 1000000};
+    struct timespec t = {.tv_sec = (time_t)(ms / SEC_IN_MILLISEC),
+                         .tv_nsec = (long)((ms % SEC_IN_MILLISEC) * 1000000)};
     return __elapsed_sleep(&t, NULL);
 }
