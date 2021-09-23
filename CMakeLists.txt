@@ -101,6 +101,10 @@ include(CheckIncludeFile)
 include(CheckLibraryExists)
 include(CheckSymbolExists)
 
+check_include_file(stdnoreturn.h HAVE_STDNORETURN_H)
+target_compile_definitions(elapsed
+                           PRIVATE $<$<BOOL:${HAVE_STDNORETURN_H}>:HAVE_STDNORETURN_H>)
+
 check_symbol_exists(gettimeofday sys/time.h HAVE_GETTIMEOFDAY)
 target_compile_definitions(
   elapsed PRIVATE $<$<BOOL:${HAVE_GETTIMEOFDAY_H}>:HAVE_GETTIMEOFDAY>)
