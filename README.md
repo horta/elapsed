@@ -5,13 +5,13 @@ Elapsed time C library.
 ## Dependencies
 
 ```bash
-bash -c "$(curl -fsSL https://git.io/JerYI)" -s horta/hope
+bash -c "$(curl -fsSL https://git.io/Jz7Oa)" -s horta/hope
 ```
 
 ## Install
 
 ```bash
-bash -c "$(curl -fsSL https://git.io/JerYI)" -s horta/elapsed
+bash -c "$(curl -fsSL https://git.io/Jz7Oa)" -s horta/elapsed
 ```
 
 ## Authors
