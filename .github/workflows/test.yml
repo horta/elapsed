@@ -1,4 +1,4 @@
-name: CMake
+name: Test
 
 on: [push]
 
@@ -21,14 +21,10 @@ jobs:
       run: brew install argp-standalone
 
     - name: Install dependencies
-      if: runner.os == 'Windows'
       shell: bash
-      run: ./install-deps
-
-    - name: Install dependencies
-      if: runner.os != 'Windows'
-      shell: bash
-      run: sudo ./install-deps
+      run: |
+        if type sudo >/dev/null 2>&1; then SUDO="sudo"; else SUDO=""; fi
+        $SUDO ./install-deps
 
     - name: Create Build Environment
       run: cmake -E make_directory ${{runner.workspace}}/build
@@ -49,13 +45,8 @@ jobs:
       run: ctest -C $BUILD_TYPE --output-on-failure
 
     - name: Install
-      if: runner.os == 'Windows'
       working-directory: ${{runner.workspace}}/build
       shell: bash
-      run: cmake --build . --target install --config $BUILD_TYPE
-
-    - name: Install
-      if: runner.os != 'Windows'
-      working-directory: ${{runner.workspace}}/build
-      shell: bash
-      run: sudo cmake --build . --target install --config $BUILD_TYPE
+      run: |
+        if type sudo >/dev/null 2>&1; then SUDO="sudo"; else SUDO=""; fi
+        $SUDO cmake --build . --target install --config $BUILD_TYPE
