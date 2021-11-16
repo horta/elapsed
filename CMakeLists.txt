@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.10 FATAL_ERROR)
 project(
   elapsed
-  VERSION 3.0.1
+  VERSION 3.0.2
   LANGUAGES C)
 set(PROJECT_DESCRIPTION "Measure elapsed time.")
 
@@ -85,15 +85,11 @@ target_include_directories(
 set_target_properties(elapsed PROPERTIES VERSION ${PROJECT_VERSION})
 set_target_properties(elapsed PROPERTIES SOVERSION ${PROJECT_VERSION_MAJOR})
 target_compile_features(elapsed INTERFACE c_std_11)
-target_link_libraries(elapsed PUBLIC $<$<BOOL:${LIBRT_FOUND}>:LIBRT::LIBRT>)
 target_compile_options(elapsed PRIVATE ${WARNING_FLAGS})
 
 # Include file check macros honor CMAKE_REQUIRED_LIBRARIES
 if(CMAKE_VERSION VERSION_GREATER 3.12.0)
   cmake_policy(SET CMP0075 NEW)
-endif()
-if(LIBRT_FOUND)
-  set(CMAKE_REQUIRED_LIBRARIES ${LIBRT_LIBRARIES})
 endif()
 
 include(CheckFunctionExists)
