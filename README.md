@@ -2,12 +2,6 @@
 
 Elapsed time C library.
 
-## Dependencies
-
-```bash
-bash -c "$(curl -fsSL https://git.io/Jz7Oa)" -s horta/hope
-```
-
 ## Install
 
 ```bash
