@@ -9,7 +9,7 @@
 #elif defined(HAVE_WINDOWS_H)
 #include <windows.h>
 #else
-static_assert(0, "failed to include either unistd.h or windows.h");
+#error Failed to include either unistd.h or windows.h
 #endif
 
 /* Source: https://tinycthread.github.io */

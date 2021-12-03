@@ -34,6 +34,7 @@ int __elapsed_timespec_get(struct timespec *ts)
     ts->tv_nsec = now.tv_usec * 1000;
     return 0;
 #else
-    static_assert(0, "failed to define __elapsed_timespec_get");
+#error Failed to define __elapsed_timespec_get
+    return 0;
 #endif
 }
