@@ -10,7 +10,7 @@ bash -c "$(curl -fsSL https://git.io/Jz7Oa)" -s horta/elapsed
 
 ## Authors
 
-* [Danilo Horta](https://github.com/horta)
+- [Danilo Horta](https://github.com/horta)
 
 ## License
 
