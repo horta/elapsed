@@ -1,66 +1,18 @@
 cmake_minimum_required(VERSION 3.16.3 FATAL_ERROR)
 project(
   elapsed
-  VERSION 3.0.5
+  VERSION 3.0.6
   LANGUAGES C)
 set(PROJECT_DESCRIPTION "Measure elapsed time.")
 
 # Generate compile_commands.json file
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
-set(CMAKE_INSTALL_RPATH_USE_LINK_PATH TRUE)
-# Set RPATH only if it's not a system directory
-list(FIND CMAKE_PLATFORM_IMPLICIT_LINK_DIRECTORIES
-     "${CMAKE_INSTALL_PREFIX}/lib" isSystemDir)
-if("${isSystemDir}" STREQUAL "-1")
-  set(CMAKE_INSTALL_RPATH "${CMAKE_INSTALL_PREFIX}/lib")
-endif()
-
-if(CMAKE_C_COMPILER_ID STREQUAL "MSVC")
-  # /wd5105:
-  # https://docs.microsoft.com/en-us/cpp/error-messages/compiler-warnings/c5105?view=msvc-160
-  set(WARNING_FLAGS /W3 /wd5105)
-else()
-  set(WARNING_FLAGS
-      -Wall
-      -Wextra
-      -Wstrict-prototypes
-      -Wshadow
-      -Wconversion
-      -Wmissing-prototypes
-      -Wno-unused-parameter
-      -Wsign-conversion
-      -Wno-unused-function)
-
-  if(NOT CMAKE_C_COMPILER_ID STREQUAL "GNU")
-    list(APPEND WARNING_FLAGS -Wno-gnu-designator -Wno-empty-translation-unit
-         -Wno-gnu-statement-expression -Wno-nullability-extension)
-  endif()
-endif()
-
-option(CI_BUILD "CI, extra flags will be set" OFF)
-if(CI_BUILD)
-  message(STATUS "CI build enabled")
-  if(CMAKE_C_COMPILER_ID STREQUAL "MSVC")
-    add_compile_options(/WX)
-  else()
-    add_compile_options(-Werror)
-  endif()
-endif()
+include(cmake/compiler-options.cmake)
+include(cmake/sanitizers.cmake)
 
 add_library(elapsed src/os.c src/elapsed.c)
 add_library(ELAPSED::elapsed ALIAS elapsed)
-
-# merge request fix:
-# https://gitlab.kitware.com/cmake/cmake/-/merge_requests/1799
-if(CMAKE_VERSION VERSION_GREATER 3.12.0)
-  # Hide functions by default.
-  set_property(TARGET elapsed PROPERTY C_VISIBILITY_PRESET hidden)
-  set_property(TARGET elapsed PROPERTY VISIBILITY_INLINES_HIDDEN ON)
-else()
-  # Fix for https://github.com/horta/almosthere/issues/3
-  set(GCC_TOO_OLD TRUE)
-endif()
 
 # Write out elapsed/export.h to the current binary directory.
 include(GenerateExportHeader)
