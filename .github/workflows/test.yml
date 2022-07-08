@@ -17,18 +17,18 @@ jobs:
       - name: Configure CMake
         if: runner.os == 'Linux'
         run: |
-          cmake -B ${{github.workspace}}/build -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}} \
+          cmake -B ${{github.workspace}}/build -DCMAKE_BUILD_TYPE=${{matrix.build_type}} \
             -DUSE_SANITIZER='Address;Undefined' -DENABLE_ALL_WARNINGS=ON
 
       - name: Configure CMake
         if: runner.os != 'Linux'
         run: |
-          cmake -B ${{github.workspace}}/build -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}} \
+          cmake -B ${{github.workspace}}/build -DCMAKE_BUILD_TYPE=${{matrix.build_type}} \
             -DENABLE_ALL_WARNINGS=ON
 
       - name: Build
-        run: cmake --build ${{github.workspace}}/build --config ${{env.BUILD_TYPE}}
+        run: cmake --build ${{github.workspace}}/build --config ${{matrix.build_type}}
 
       - name: Test
         working-directory: ${{github.workspace}}/build
-        run: ctest -C ${{env.BUILD_TYPE}} --output-on-failure
+        run: ctest -C ${{matrix.build_type}} --output-on-failure
