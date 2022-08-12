@@ -1,11 +1,26 @@
 cmake_minimum_required(VERSION 3.16.3 FATAL_ERROR)
 project(
   elapsed
-  VERSION 3.0.6
+  VERSION 3.0.7
   LANGUAGES C)
 set(PROJECT_DESCRIPTION "Measure elapsed time.")
 
-# Generate compile_commands.json file
+set(ELAPSED_MAIN_PROJECT OFF)
+if(CMAKE_SOURCE_DIR STREQUAL PROJECT_SOURCE_DIR)
+  set(ELAPSED_MAIN_PROJECT ON)
+endif()
+
+if(ELAPSED_MAIN_PROJECT)
+  set(ELAPSED_BUILD_TESTS_DEFAULT ON)
+else()
+  set(ELAPSED_BUILD_TESTS_DEFAULT OFF)
+endif()
+
+option(ELAPSED_BUILD_TESTS "Build the unit tests"
+       ${ELAPSED_BUILD_TESTS_DEFAULT})
+message(STATUS "ELAPSED_MAIN_PROJECT: " ${ELAPSED_MAIN_PROJECT})
+message(STATUS "ELAPSED_BUILD_TESTS: " ${ELAPSED_BUILD_TESTS})
+
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
 include(cmake/compiler-options.cmake)
@@ -108,8 +123,10 @@ install(FILES ${CMAKE_CURRENT_SOURCE_DIR}/README.md
               ${CMAKE_CURRENT_SOURCE_DIR}/LICENSE.md
         DESTINATION share/docs/${PROJECT_NAME})
 
-enable_testing()
-add_subdirectory(test)
+if(ELAPSED_BUILD_TESTS)
+  enable_testing()
+  add_subdirectory(test)
+endif()
 
 set(CPACK_PACKAGE_NAME ${PROJECT_NAME})
 set(CPACK_PACKAGE_VENDOR "Danilo Horta")
