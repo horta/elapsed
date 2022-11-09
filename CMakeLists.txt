@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.16.3 FATAL_ERROR)
 project(
   elapsed
-  VERSION 3.0.7
+  VERSION 3.0.8
   LANGUAGES C)
 set(PROJECT_DESCRIPTION "Measure elapsed time.")
 
@@ -22,6 +22,7 @@ message(STATUS "ELAPSED_MAIN_PROJECT: " ${ELAPSED_MAIN_PROJECT})
 message(STATUS "ELAPSED_BUILD_TESTS: " ${ELAPSED_BUILD_TESTS})
 
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
+set(CMAKE_C_EXTENSIONS OFF)
 
 include(cmake/compiler-options.cmake)
 include(cmake/sanitizers.cmake)
