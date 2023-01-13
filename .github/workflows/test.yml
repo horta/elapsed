@@ -1,6 +1,6 @@
 name: Test
 
-on: push
+on: ["push", "pull_request"]
 
 jobs:
   test:
@@ -20,7 +20,7 @@ jobs:
         build_type: [Release, Debug]
 
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
 
       - name: Configure CMake
         if: runner.os == 'Linux'
@@ -29,7 +29,6 @@ jobs:
           -B ${{github.workspace}}/build
           -DCMAKE_BUILD_TYPE=${{matrix.build_type}}
           -DUSE_SANITIZER='Address;Undefined'
-          -DENABLE_ALL_WARNINGS=ON
 
       - name: Configure CMake
         if: runner.os != 'Linux'
@@ -37,7 +36,6 @@ jobs:
           cmake
           -B ${{github.workspace}}/build
           -DCMAKE_BUILD_TYPE=${{matrix.build_type}}
-          -DENABLE_ALL_WARNINGS=ON
 
       - name: Build
         run: >

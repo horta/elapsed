@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.16.3 FATAL_ERROR)
 project(
   elapsed
-  VERSION 3.0.8
+  VERSION 3.0.9
   LANGUAGES C)
 set(PROJECT_DESCRIPTION "Measure elapsed time.")
 
@@ -24,8 +24,8 @@ message(STATUS "ELAPSED_BUILD_TESTS: " ${ELAPSED_BUILD_TESTS})
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 set(CMAKE_C_EXTENSIONS OFF)
 
-include(cmake/compiler-options.cmake)
 include(cmake/sanitizers.cmake)
+include(cmake/warnings.cmake)
 
 add_library(elapsed src/os.c src/elapsed.c)
 add_library(ELAPSED::elapsed ALIAS elapsed)
@@ -126,20 +126,17 @@ install(FILES ${CMAKE_CURRENT_SOURCE_DIR}/README.md
 
 if(ELAPSED_BUILD_TESTS)
   enable_testing()
-  add_subdirectory(test)
-endif()
+  macro(inject_dll_to_please_windows test_name)
+    file(TO_CMAKE_PATH "$ENV{PATH}" PATH)
+    list(APPEND PATH $<TARGET_FILE_DIR:ELAPSED::elapsed>)
+    string(REPLACE ";" "\\;" PATH "${PATH}")
+    set_tests_properties(${test_name} PROPERTIES ENVIRONMENT "PATH=${PATH}")
+  endmacro()
 
-set(CPACK_PACKAGE_NAME ${PROJECT_NAME})
-set(CPACK_PACKAGE_VENDOR "Danilo Horta")
-set(CPACK_PACKAGE_DESCRIPTION_SUMMARY "Elapsed time C library")
-set(CPACK_PACKAGE_CONTACT "Danilo Horta")
-set(CPACK_PACKAGE_VERSION_MAJOR ${PROJECT_VERSION_MAJOR})
-set(CPACK_PACKAGE_VERSION_MINOR ${PROJECT_VERSION_MINOR})
-set(CPACK_PACKAGE_VERSION_PATCH ${PROJECT_VERSION_PATCH})
-set(CPACK_RESOURCE_FILE_LICENSE ${CMAKE_CURRENT_SOURCE_DIR}/LICENSE.md)
-set(CPACK_RESOURCE_FILE_README ${CMAKE_CURRENT_SOURCE_DIR}/README.md)
-set(CPACK_OUTPUT_FILE_PREFIX ${CMAKE_CURRENT_BINARY_DIR}/package)
-set(CPACK_VERBATIM_VARIABLES YES)
-set(CPACK_PACKAGE_RELOCATABLE YES)
-set(CPACK_MONOLITHIC_INSTALL YES)
-include(CPack)
+  add_executable(test_elapsed test_elapsed.c)
+  target_link_libraries(test_elapsed PRIVATE ELAPSED::elapsed)
+  target_compile_options(test_elapsed PRIVATE ${WARNING_FLAGS})
+  target_compile_features(test_elapsed PRIVATE c_std_11)
+  add_test(NAME elapsed COMMAND test_elapsed)
+  inject_dll_to_please_windows(elapsed)
+endif()
