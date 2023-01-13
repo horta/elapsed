@@ -1,11 +1,23 @@
-#include "os.h"
-#include <assert.h>
-#include <stddef.h>
-#include <stdio.h>
+#include "timespec.h"
+#include "platform.h"
+
+#if defined(ELAPSED_POSIX)
+#include "posix_time.h"
+#else
+#include <time.h>
+#endif
+
+#if defined(HAVE_UNISTD_H)
+#include <unistd.h>
+#elif defined(HAVE_WINDOWS_H)
+#include <windows.h>
+#else
+#error Failed to include either unistd.h or windows.h
+#endif
+
 #if defined(HAVE_SYS_TIME_H)
 #include <sys/time.h>
 #endif
-#include <time.h>
 
 /* https://stackoverflow.com/a/50245503 */
 /* We prefer CLOCK_MONOTONIC but POSIX does not enforce the implementation of

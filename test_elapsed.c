@@ -1,4 +1,5 @@
 #include "elapsed/elapsed.h"
+#include <stdlib.h>
 
 int main(void)
 {
@@ -7,15 +8,17 @@ int main(void)
     if (elapsed_sleep(300) != 0) return EXIT_FAILURE;
     if (elapsed_stop(&elapsed) != 0) return EXIT_FAILURE;
     if (elapsed_milliseconds(&elapsed) < 250) return EXIT_FAILURE;
+    if (elapsed_mssecs(&elapsed) < 250) return EXIT_FAILURE;
 
     if (elapsed_start(&elapsed) != 0) return EXIT_FAILURE;
     if (elapsed_sleep(800) != 0) return EXIT_FAILURE;
     if (elapsed_stop(&elapsed), 0 != 0) return EXIT_FAILURE;
     if (elapsed_milliseconds(&elapsed) < 750) return EXIT_FAILURE;
+    if (elapsed_mssecs(&elapsed) < 750) return EXIT_FAILURE;
 
     if (elapsed_start(&elapsed) != 0) return EXIT_FAILURE;
     if (elapsed_stop(&elapsed) != 0) return EXIT_FAILURE;
     if (elapsed_milliseconds(&elapsed) > 500) return EXIT_FAILURE;
-
+    if (elapsed_mssecs(&elapsed) > 500) return EXIT_FAILURE;
     return EXIT_SUCCESS;
 }

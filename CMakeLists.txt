@@ -28,7 +28,7 @@ set(CMAKE_C_EXTENSIONS OFF)
 include(cmake/sanitizers.cmake)
 include(cmake/warnings.cmake)
 
-add_library(elapsed os.c elapsed.c)
+add_library(elapsed elapsed.c timespec.c sleep.c fatal.c)
 add_library(ELAPSED::elapsed ALIAS elapsed)
 
 target_include_directories(

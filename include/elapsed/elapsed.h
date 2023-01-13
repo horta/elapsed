@@ -2,8 +2,6 @@
 #define ELAPSED_ELAPSED_H
 
 #include "elapsed/export.h"
-#include <stdint.h>
-#include <stdlib.h>
 #include <time.h>
 
 struct elapsed
@@ -17,9 +15,10 @@ struct elapsed
         0                                                                      \
     }
 
-ELAPSED_API int elapsed_start(struct elapsed *elapsed);
-ELAPSED_API uint64_t elapsed_milliseconds(struct elapsed const *elapsed);
-ELAPSED_API int elapsed_stop(struct elapsed *elapsed);
-ELAPSED_API int elapsed_sleep(uint64_t milliseconds);
+ELAPSED_API int elapsed_start(struct elapsed *);
+ELAPSED_API long elapsed_milliseconds(struct elapsed const *);
+ELAPSED_API long elapsed_mssecs(struct elapsed const *);
+ELAPSED_API int elapsed_stop(struct elapsed *);
+ELAPSED_API int elapsed_sleep(long mssecs);
 
 #endif
