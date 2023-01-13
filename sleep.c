@@ -7,6 +7,14 @@
 #include <time.h>
 #endif
 
+#if defined(HAVE_UNISTD_H)
+#include <unistd.h>
+#elif defined(HAVE_WINDOWS_H)
+#include <windows.h>
+#else
+#error Failed to include either unistd.h or windows.h
+#endif
+
 #include <errno.h>
 
 /* Source: https://tinycthread.github.io */

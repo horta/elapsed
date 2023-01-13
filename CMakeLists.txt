@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.16.3 FATAL_ERROR)
 project(
   elapsed
-  VERSION 3.0.9
+  VERSION 3.1.0
   LANGUAGES C)
 set(PROJECT_DESCRIPTION "Measure elapsed time.")
 
