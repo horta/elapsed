@@ -22,37 +22,22 @@ message(STATUS "ELAPSED_MAIN_PROJECT: " ${ELAPSED_MAIN_PROJECT})
 message(STATUS "ELAPSED_BUILD_TESTS: " ${ELAPSED_BUILD_TESTS})
 
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
+set(CMAKE_C_STANDARD 11)
 set(CMAKE_C_EXTENSIONS OFF)
 
 include(cmake/sanitizers.cmake)
 include(cmake/warnings.cmake)
 
-add_library(elapsed src/os.c src/elapsed.c)
+add_library(elapsed os.c elapsed.c)
 add_library(ELAPSED::elapsed ALIAS elapsed)
 
-# Write out elapsed/export.h to the current binary directory.
-include(GenerateExportHeader)
-generate_export_header(
-  elapsed
-  BASE_NAME
-  ELAPSED
-  EXPORT_MACRO_NAME
-  ELAPSED_API
-  EXPORT_FILE_NAME
-  ${CMAKE_CURRENT_BINARY_DIR}/elapsed/export.h)
-
-target_include_directories(
-  elapsed INTERFACE $<INSTALL_INTERFACE:include>
-                    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>)
 target_include_directories(
   elapsed
   PUBLIC $<INSTALL_INTERFACE:include>
-         $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/src>
-         $<BUILD_INTERFACE:${CMAKE_CURRENT_BINARY_DIR}>
-  PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/src)
+         $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
+  PRIVATE ${CMAKE_CURRENT_SOURCE_DIR})
 set_target_properties(elapsed PROPERTIES VERSION ${PROJECT_VERSION})
 set_target_properties(elapsed PROPERTIES SOVERSION ${PROJECT_VERSION_MAJOR})
-target_compile_features(elapsed INTERFACE c_std_11)
 target_compile_options(elapsed PRIVATE ${WARNING_FLAGS})
 
 # Include file check macros honor CMAKE_REQUIRED_LIBRARIES
@@ -104,9 +89,7 @@ install(
   LIBRARY DESTINATION lib
   ARCHIVE DESTINATION lib
   PUBLIC_HEADER DESTINATION include)
-install(DIRECTORY src/elapsed/ DESTINATION include/elapsed)
-install(FILES ${CMAKE_CURRENT_BINARY_DIR}/elapsed/export.h
-        DESTINATION include/elapsed)
+install(DIRECTORY include/elapsed DESTINATION include/elapsed)
 install(
   EXPORT elapsed-targets
   FILE elapsed-targets.cmake
@@ -136,7 +119,6 @@ if(ELAPSED_BUILD_TESTS)
   add_executable(test_elapsed test_elapsed.c)
   target_link_libraries(test_elapsed PRIVATE ELAPSED::elapsed)
   target_compile_options(test_elapsed PRIVATE ${WARNING_FLAGS})
-  target_compile_features(test_elapsed PRIVATE c_std_11)
   add_test(NAME elapsed COMMAND test_elapsed)
   inject_dll_to_please_windows(elapsed)
 endif()
