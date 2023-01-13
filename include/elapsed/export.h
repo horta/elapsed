@@ -2,7 +2,7 @@
 #define ELAPSED_API_H
 
 /* clang-format off */
-#ifdef elapsed_STATIC_DEFINE
+#ifdef ELAPSED_STATIC_DEFINE
 #  define ELAPSED_API
 #else
 #  ifdef elapsed_EXPORTS /* We are building this library */

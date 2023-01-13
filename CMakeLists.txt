@@ -30,6 +30,10 @@ include(cmake/warnings.cmake)
 
 add_library(elapsed elapsed.c timespec.c sleep.c fatal.c)
 add_library(ELAPSED::elapsed ALIAS elapsed)
+if (NOT BUILD_SHARED_LIBS)
+  target_compile_definitions(elapsed PUBLIC -DELAPSED_STATIC_DEFINE)
+endif()
+
 
 target_include_directories(
   elapsed
