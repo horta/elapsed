@@ -1,25 +1,9 @@
 cmake_minimum_required(VERSION 3.16.3 FATAL_ERROR)
 project(
   elapsed
-  VERSION 3.1.1
+  VERSION 3.1.2
   LANGUAGES C)
 set(PROJECT_DESCRIPTION "Measure elapsed time.")
-
-set(ELAPSED_MAIN_PROJECT OFF)
-if(CMAKE_SOURCE_DIR STREQUAL PROJECT_SOURCE_DIR)
-  set(ELAPSED_MAIN_PROJECT ON)
-endif()
-
-if(ELAPSED_MAIN_PROJECT)
-  set(ELAPSED_BUILD_TESTS_DEFAULT ON)
-else()
-  set(ELAPSED_BUILD_TESTS_DEFAULT OFF)
-endif()
-
-option(ELAPSED_BUILD_TESTS "Build the unit tests"
-       ${ELAPSED_BUILD_TESTS_DEFAULT})
-message(STATUS "ELAPSED_MAIN_PROJECT: " ${ELAPSED_MAIN_PROJECT})
-message(STATUS "ELAPSED_BUILD_TESTS: " ${ELAPSED_BUILD_TESTS})
 
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 set(CMAKE_C_STANDARD 11)
@@ -30,15 +14,17 @@ include(cmake/warnings.cmake)
 
 add_library(elapsed elapsed.c timespec.c sleep.c fatal.c)
 add_library(ELAPSED::elapsed ALIAS elapsed)
-if (NOT BUILD_SHARED_LIBS)
+
+if(NOT BUILD_SHARED_LIBS)
   target_compile_definitions(elapsed PUBLIC -DELAPSED_STATIC_DEFINE)
 endif()
 
 target_include_directories(
   elapsed
   PUBLIC $<INSTALL_INTERFACE:include>
-         $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
-  PRIVATE ${CMAKE_CURRENT_SOURCE_DIR})
+         $<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}/include>
+  PRIVATE ${PROJECT_SOURCE_DIR})
+
 set_target_properties(elapsed PROPERTIES VERSION ${PROJECT_VERSION})
 set_target_properties(elapsed PROPERTIES SOVERSION ${PROJECT_VERSION_MAJOR})
 target_compile_options(elapsed PRIVATE ${WARNING_FLAGS})
@@ -90,36 +76,35 @@ install(
   EXPORT elapsed-targets
   RUNTIME DESTINATION bin
   LIBRARY DESTINATION lib
-  ARCHIVE DESTINATION lib
-  PUBLIC_HEADER DESTINATION include)
-install(DIRECTORY include/elapsed DESTINATION include/elapsed)
+  ARCHIVE DESTINATION lib)
+install(DIRECTORY include/elapsed/ DESTINATION include/elapsed)
+
+export(
+  TARGETS elapsed
+  NAMESPACE ELAPSED::
+  FILE elapsed-targets.cmake)
 install(
   EXPORT elapsed-targets
-  FILE elapsed-targets.cmake
   NAMESPACE ELAPSED::
   DESTINATION lib/cmake/elapsed)
 
+install(FILES ${PROJECT_SOURCE_DIR}/README.md ${PROJECT_SOURCE_DIR}/LICENSE.md
+        DESTINATION share/docs/elapsed)
+
 include(CMakePackageConfigHelpers)
 
-set(CMAKE_CONFIG_FILE ${CMAKE_CURRENT_BINARY_DIR}/elapsed-config.cmake)
-configure_package_config_file(
-  elapsed-config.cmake.in ${CMAKE_CONFIG_FILE}
-  INSTALL_DESTINATION lib/cmake/elapsed
-  NO_SET_AND_CHECK_MACRO)
+set(project_config ${PROJECT_BINARY_DIR}/elapsed-config.cmake)
+set(version_config ${PROJECT_BINARY_DIR}/elapsed-config-version.cmake)
 
-set(CMAKE_VERSION_FILE ${CMAKE_CURRENT_BINARY_DIR}/elapsed-config-version.cmake)
-write_basic_package_version_file(${CMAKE_VERSION_FILE}
+configure_package_config_file(elapsed-config.cmake.in ${project_config}
+                              INSTALL_DESTINATION lib/cmake/elapsed)
+
+write_basic_package_version_file(${version_config}
                                  COMPATIBILITY SameMajorVersion)
 
-install(FILES ${CMAKE_CONFIG_FILE}
-              ${CMAKE_VERSION_FILE}
-        DESTINATION lib/cmake/elapsed)
+install(FILES ${project_config} ${version_config} DESTINATION lib/cmake/elapsed)
 
-install(FILES ${CMAKE_CURRENT_SOURCE_DIR}/README.md
-              ${CMAKE_CURRENT_SOURCE_DIR}/LICENSE.md
-        DESTINATION share/docs/${PROJECT_NAME})
-
-if(ELAPSED_BUILD_TESTS)
+if(CMAKE_SOURCE_DIR STREQUAL PROJECT_SOURCE_DIR)
   enable_testing()
   macro(inject_dll_to_please_windows test_name)
     file(TO_CMAKE_PATH "$ENV{PATH}" PATH)
