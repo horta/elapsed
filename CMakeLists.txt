@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.16.3 FATAL_ERROR)
 project(
   elapsed
-  VERSION 3.1.0
+  VERSION 3.1.1
   LANGUAGES C)
 set(PROJECT_DESCRIPTION "Measure elapsed time.")
 
@@ -33,7 +33,6 @@ add_library(ELAPSED::elapsed ALIAS elapsed)
 if (NOT BUILD_SHARED_LIBS)
   target_compile_definitions(elapsed PUBLIC -DELAPSED_STATIC_DEFINE)
 endif()
-
 
 target_include_directories(
   elapsed
@@ -99,12 +98,21 @@ install(
   FILE elapsed-targets.cmake
   NAMESPACE ELAPSED::
   DESTINATION lib/cmake/elapsed)
+
 include(CMakePackageConfigHelpers)
+
+set(CMAKE_CONFIG_FILE ${CMAKE_CURRENT_BINARY_DIR}/elapsed-config.cmake)
 configure_package_config_file(
-  elapsed-config.cmake.in ${CMAKE_CURRENT_BINARY_DIR}/elapsed-config.cmake
+  elapsed-config.cmake.in ${CMAKE_CONFIG_FILE}
   INSTALL_DESTINATION lib/cmake/elapsed
   NO_SET_AND_CHECK_MACRO)
-install(FILES ${CMAKE_CURRENT_BINARY_DIR}/elapsed-config.cmake
+
+set(CMAKE_VERSION_FILE ${CMAKE_CURRENT_BINARY_DIR}/elapsed-config-version.cmake)
+write_basic_package_version_file(${CMAKE_VERSION_FILE}
+                                 COMPATIBILITY SameMajorVersion)
+
+install(FILES ${CMAKE_CONFIG_FILE}
+              ${CMAKE_VERSION_FILE}
         DESTINATION lib/cmake/elapsed)
 
 install(FILES ${CMAKE_CURRENT_SOURCE_DIR}/README.md
