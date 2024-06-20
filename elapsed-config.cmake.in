@@ -1,7 +1,0 @@
-@PACKAGE_INIT@
-
-if (NOT TARGET ELAPSED::elapsed)
-    include("${CMAKE_CURRENT_LIST_DIR}/elapsed-targets.cmake")
-endif()
-
-check_required_components(elapsed)
