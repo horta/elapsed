@@ -7,21 +7,9 @@ on:
     branches: [ "main" ]
 
 jobs:
-  build-on-ubuntu:
+  build-and-test:
 
-    runs-on: ubuntu-latest
-
-    steps:
-    - uses: actions/checkout@v4
-    - name: build
-      run: gcc -std=c11 -Wall -Wextra -Wpedantic -Werror example.c elapsed.c -o example
-    - name: test
-      run: ./example
-
-
-  build-on-mac:
-
-    runs-on: mac-13
+    runs-on: [ubuntu-latest, windows-2022, macos-12, macos-13]
 
     steps:
     - uses: actions/checkout@v4
@@ -29,16 +17,3 @@ jobs:
       run: gcc -std=c11 -Wall -Wextra -Wpedantic -Werror example.c elapsed.c -o example
     - name: test
       run: ./example
-
-
-  build-on-windows:
-
-    runs-on: windows-2022
-
-    steps:
-    - uses: actions/checkout@v4
-    - name: build
-      run: gcc -std=c11 -Wall -Wextra -Wpedantic -Werror example.c elapsed.c -o example
-    - name: test
-      run: ./example
-
